@@ -30,18 +30,25 @@ function changeContent() {
     const p = document.getElementById('phraseDisplay');
     const a = document.getElementById('authorDisplay');
 
-    // Animação de fade out
+    // Animação de fade out com slide para cima
     p.style.opacity = '0';
-    p.style.transform = 'translateY(10px)';
+    p.style.transform = 'translateY(-20px)';
+    a.style.opacity = '0';
 
+    // Delay orgânico para trocar o conteúdo
     setTimeout(() => {
         index = (index + 1) % content.length;
         p.innerText = `"${content[index].t}"`;
         a.innerText = `— ${content[index].a}`;
-        // Animação de fade in
+    }, 300);
+
+    // Delay maior para animar a entrada
+    setTimeout(() => {
+        // Animação de fade in com slide de baixo
         p.style.opacity = '1';
         p.style.transform = 'translateY(0)';
-    }, 500);
+        a.style.opacity = '1';
+    }, 350);
 }
 
 // Função para gerar uma imagem da frase atual e fazer o download
