@@ -141,6 +141,25 @@ body {
     font-weight: 600;
 }
 
+.icon-display {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    animation: iconFadeIn 0.5s ease;
+}
+
+@keyframes iconFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 .phrase-box {
     min-height: 200px;
 }

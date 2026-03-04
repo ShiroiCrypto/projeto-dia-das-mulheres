@@ -1,6 +1,16 @@
 // Variáveis globais para armazenar as frases e o índice atual
 let content = [];
-let index = 6; // Começar com a sétima frase, que é a exibida inicialmente no HTML
+let index = 0; // Será atualizado aleatoriamente ao carregar as frases
+let previousIndex = -1; // Rastreia o índice anterior para evitar repetição
+
+// Função para gerar um índice aleatório diferente do anterior
+function getRandomIndex() {
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * content.length);
+    } while (randomIndex === previousIndex && content.length > 1);
+    return randomIndex;
+}
 
 // Função assíncrona para carregar frases do arquivo JSON
 async function loadPhrases() {
@@ -10,11 +20,18 @@ async function loadPhrases() {
             throw new Error('Erro na resposta da rede');
         }
         content = await response.json();
-        // Inicializar com a frase atual (index 6)
+        // Selecionar uma frase aleatória para iniciar
+        index = getRandomIndex();
+        previousIndex = index;
+        
         const p = document.getElementById('phraseDisplay');
         const a = document.getElementById('authorDisplay');
+        const icon = document.getElementById('iconDisplay');
+        
         p.innerText = `"${content[index].t}"`;
         a.innerText = `— ${content[index].a}`;
+        // Exibir o ícone se existir, caso contrário deixar vazio
+        icon.innerText = content[index].icon || '';
     } catch (error) {
         console.error('Erro ao carregar frases:', error);
     }
@@ -29,17 +46,25 @@ function changeContent() {
 
     const p = document.getElementById('phraseDisplay');
     const a = document.getElementById('authorDisplay');
+    const icon = document.getElementById('iconDisplay');
 
     // Animação de fade out com slide para cima
     p.style.opacity = '0';
     p.style.transform = 'translateY(-20px)';
     a.style.opacity = '0';
+    icon.style.opacity = '0';
+    icon.style.transform = 'scale(0.5)';
 
     // Delay orgânico para trocar o conteúdo
     setTimeout(() => {
-        index = (index + 1) % content.length;
+        // Selecionar uma frase aleatória (diferente da anterior)
+        previousIndex = index;
+        index = getRandomIndex();
+        
         p.innerText = `"${content[index].t}"`;
         a.innerText = `— ${content[index].a}`;
+        // Exibir o ícone se existir, caso contrário deixar vazio
+        icon.innerText = content[index].icon || '';
     }, 300);
 
     // Delay maior para animar a entrada
@@ -48,6 +73,8 @@ function changeContent() {
         p.style.opacity = '1';
         p.style.transform = 'translateY(0)';
         a.style.opacity = '1';
+        icon.style.opacity = '1';
+        icon.style.transform = 'scale(1)';
     }, 350);
 }
 
@@ -60,16 +87,21 @@ function generateImageAndDownload() {
     canvas.height = 1350;
     const ctx = canvas.getContext('2d');
 
+    // Validação de dados com fallbacks
+    const phraseText = (content[index].t || '').replace(/"/g, '').trim();
+    const authorText = content[index].a || 'Autora Desconhecida';
+    const iconEmoji = content[index].icon || '🌹';
+
     // Criar gradiente de fundo
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#ff9a9e');
-    gradient.addColorStop(0.5, '#fad0c4');
-    gradient.addColorStop(1, '#ffd1ff');
+    gradient.addColorStop(0, '#f5f0eb');
+    gradient.addColorStop(0.5, '#f0e0e8');
+    gradient.addColorStop(1, '#edd5e3');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Adicionar círculos decorativos
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.beginPath();
     ctx.arc(150, 150, 200, 0, Math.PI * 2);
     ctx.fill();
@@ -79,24 +111,29 @@ function generateImageAndDownload() {
     ctx.fill();
 
     // Retângulo central para o texto
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.fillRect(60, 280, canvas.width - 120, 650);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.fillRect(60, 250, canvas.width - 120, 720);
 
-    // Borda do retângulo
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(60, 280, canvas.width - 120, 650);
+    // Borda do retângulo com cor dourada sutil
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, 250, canvas.width - 120, 720);
+
+    // Determinar tamanho da fonte baseado no comprimento da frase
+    let fontSize = 46;
+    if (phraseText.length > 100) {
+        fontSize = 38;
+    }
 
     // Configurar fonte e estilo para o texto da frase
     ctx.fillStyle = '#2d2d2d';
-    ctx.font = 'italic 46px "Playfair Display", Georgia, serif';
+    ctx.font = `italic ${fontSize}px "Playfair Display", Georgia, serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Quebrar o texto em linhas para caber na largura máxima
+    // Quebrar o texto em linhas de forma inteligente
     const maxWidth = canvas.width - 200;
-    const lineHeight = 65;
-    const phraseText = content[index].t.replace(/"/g, '').trim();
+    const lineHeight = 55;
     const words = phraseText.split(' ');
     let lines = [];
     let currentLine = '';
@@ -113,10 +150,23 @@ function generateImageAndDownload() {
     }
     if (currentLine) lines.push(currentLine);
 
+    // Desenhar o ícone centralizado acima do texto
+    ctx.font = '70px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(iconEmoji, canvas.width / 2, canvas.height * 0.28);
+
+    // Calcular startY para centralizar verticalmente o bloco de texto
+    const textBlockHeight = lines.length * lineHeight;
+    const baseY = canvas.height * 0.52;
+    const startY = baseY - (textBlockHeight / 2);
+
     // Desenhar as linhas de texto centralizadas
-    const startY = canvas.height * 0.42;
+    ctx.fillStyle = '#2d2d2d';
+    ctx.font = `italic ${fontSize}px "Playfair Display", Georgia, serif`;
+    ctx.textAlign = 'center';
     lines.forEach((line, i) => {
-        const y = startY + (i * lineHeight) - ((lines.length - 1) * lineHeight / 2);
+        const y = startY + (i * lineHeight);
         ctx.fillText(line, canvas.width / 2, y);
     });
 
@@ -124,25 +174,27 @@ function generateImageAndDownload() {
     ctx.strokeStyle = '#ff4d6d';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(canvas.width * 0.25, canvas.height * 0.78);
-    ctx.lineTo(canvas.width * 0.75, canvas.height * 0.78);
+    ctx.moveTo(canvas.width * 0.2, canvas.height * 0.75);
+    ctx.lineTo(canvas.width * 0.8, canvas.height * 0.75);
     ctx.stroke();
 
     // Texto do autor
-    ctx.font = 'bold 36px "Montserrat", sans-serif';
+    ctx.font = 'bold 32px "Montserrat", sans-serif';
     ctx.fillStyle = '#ff4d6d';
-    ctx.fillText(content[index].a, canvas.width / 2, canvas.height * 0.85);
+    ctx.textAlign = 'center';
+    ctx.fillText(authorText, canvas.width / 2, canvas.height * 0.83);
 
-    // Texto inferior
-    ctx.font = '22px "Montserrat", sans-serif';
+    // Texto informativo
+    ctx.font = '20px "Montserrat", sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨ Essência Feminina - 8 de Março ✨', canvas.width / 2, canvas.height - 70);
+
+    // Créditos finais
+    ctx.font = '16px "Montserrat", sans-serif';
     ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.textAlign = 'center';
-    ctx.fillText('✨ Essência Feminina - 8 de Março ✨', canvas.width / 2, canvas.height - 60);
-
-    // Créditos
-    ctx.font = '16px "Montserrat", sans-serif';
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-    ctx.fillText('Desenvolvido por Shiroi_Crypto & Retr0', canvas.width / 2, canvas.height - 20);
+    ctx.fillText('Desenvolvido por Shiroi_Crypto & Retr0', canvas.width / 2, canvas.height - 25);
 
     // Converter canvas para blob e fazer download
     canvas.toBlob(blob => {
