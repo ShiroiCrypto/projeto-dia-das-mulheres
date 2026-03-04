@@ -49,7 +49,7 @@ O projeto está configurado para deploy na Vercel com caminhos relativos, garant
 
 Desenvolvido com ❤️ por:
 
-- [**Shiroi_Crypto**](https://github.com/ShiroiCrypto) - Desenvolvedor Frontend
+- [**Shiroi_Crypto**](https://github.com/ShiroiCrypto) - Desenvolvedor Backend
 - [**Retr0**](https://github.com/Retr0DedSec0) - Desenvolvedor Full-Stack
 
 ## 📄 Licença
