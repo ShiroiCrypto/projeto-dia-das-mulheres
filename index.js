@@ -3,10 +3,9 @@ let content = [];
 let index = 0;
 let previousIndex = -1;
 
-// Ciclo automático (Modo TV): 90 segundos
-const CYCLE_INTERVAL_MS = 90 * 1000;
-let cycleIntervalId = null;
-let cyclePaused = false;
+// Modo TV: ativação única; ciclo de 90s; botão some; só F5 restaura
+const TV_INTERVAL_MS = 90 * 1000;
+let tvInterval = null;
 
 // URL base oficial (QR Code sempre aponta para ela)
 const BASE_URL = 'https://projeto-dia-das-mulheres-tan.vercel.app';
@@ -110,47 +109,25 @@ async function loadPhrases() {
     }
 }
 
-// Inicia o ciclo automático (Modo TV)
-function startCycle() {
-    if (cycleIntervalId) return;
-    cycleIntervalId = setInterval(() => {
-        if (!cyclePaused) changeContent();
-    }, CYCLE_INTERVAL_MS);
-}
-
-// Para o ciclo automático
-function stopCycle() {
-    if (cycleIntervalId) {
-        clearInterval(cycleIntervalId);
-        cycleIntervalId = null;
-    }
-}
-
-// Alterna Pausar / Retomar e atualiza o botão
-function toggleCycle() {
-    cyclePaused = !cyclePaused;
-    const btn = document.getElementById('cycleToggle');
-    const label = document.getElementById('cycleLabel');
-    const icon = btn ? btn.querySelector('i') : null;
-    if (btn) btn.classList.toggle('paused', cyclePaused);
-    if (label) label.textContent = cyclePaused ? 'Retomar ciclo' : 'Pausar ciclo';
-    if (icon) {
-        icon.className = cyclePaused ? 'fa-solid fa-play' : 'fa-solid fa-pause';
-    }
-    if (cyclePaused) {
-        stopCycle();
-    } else {
-        startCycle();
-    }
+// Ativa o Modo TV: adiciona .tv-mode, inicia ciclo de 90s, remove o botão. Só F5 restaura.
+function activateTVMode() {
+    document.body.classList.add('tv-mode');
+    tvInterval = setInterval(() => changeContent(), TV_INTERVAL_MS);
+    const controls = document.querySelector('.tv-controls');
+    if (controls) controls.remove();
 }
 
 // Função para alterar o conteúdo da frase exibida (nova frase + URL + QR)
+// No Modo TV usa transição de 1s; fora dele usa ~300ms
 function changeContent() {
     if (content.length === 0) return;
 
     const p = document.getElementById('phraseDisplay');
     const a = document.getElementById('authorDisplay');
     const icon = document.getElementById('iconDisplay');
+    const isTvMode = document.body.classList.contains('tv-mode');
+    const delayOut = isTvMode ? 1000 : 300;
+    const delayIn = isTvMode ? 1050 : 350;
 
     p.style.opacity = '0';
     p.style.transform = 'translateY(-20px)';
@@ -168,7 +145,7 @@ function changeContent() {
 
         updateUrlWithId();
         updateQRCode();
-    }, 300);
+    }, delayOut);
 
     setTimeout(() => {
         if (p) {
@@ -180,7 +157,7 @@ function changeContent() {
             icon.style.opacity = '1';
             icon.style.transform = 'scale(1)';
         }
-    }, 350);
+    }, delayIn);
 }
 
 // Retorna o objeto da frase atual (sempre consistente com a UI)
@@ -309,15 +286,12 @@ function shareToInsta() {
     generateImageAndDownload();
 }
 
-// Inicialização: carregar frases; ciclo só em Desktop e se não veio de QR (?id=)
+// Inicialização: carregar frases; Modo TV só ativa ao clicar no botão (depois só F5 restaura)
 window.addEventListener('load', () => {
-    loadPhrases().then((fromDeepLink) => {
+    loadPhrases().then(() => {
         updateQRCode();
-        // Ciclo automático apenas em Desktop (TV/PC) e quando não abriu por link/QR
-        const shouldStartCycle = isDesktop() && !fromDeepLink;
-        if (shouldStartCycle) startCycle();
-        const toggleBtn = document.getElementById('cycleToggle');
-        if (toggleBtn) toggleBtn.addEventListener('click', toggleCycle);
+        const btnTvMode = document.getElementById('btnTvMode');
+        if (btnTvMode) btnTvMode.addEventListener('click', activateTVMode);
     });
 
     // Popstate: quando o usuário volta/avança no histórico, aplicar o id da URL

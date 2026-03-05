@@ -257,34 +257,26 @@ body {
     .qr-label {
         font-size: 0.65rem;
     }
-}
-    
-    .hero-side { 
-        min-height: 200px; 
+    .hero-side {
+        min-height: 200px;
         padding: 30px 20px;
     }
-    
     .hero-content h2 {
         font-size: 1.8rem;
     }
-    
     .hero-content p {
         font-size: 0.9rem;
     }
-    
-    .content-side { 
+    .content-side {
         padding: 25px 20px;
     }
-    
     .phrase-text {
         font-size: 1.2rem;
     }
-    
     .date-tag {
         font-size: 0.7rem;
         padding: 5px 15px;
     }
-    
     .btn {
         padding: 14px 25px;
         font-size: 0.9rem;
@@ -313,10 +305,10 @@ body {
     .tv-controls {
         padding: 10px;
     }
-    .btn-cycle span {
+    .btn-tv-mode-label {
         display: none;
     }
-    .btn-cycle {
+    .btn-tv-mode {
         padding: 10px 14px;
     }
     
@@ -398,8 +390,25 @@ footer a:hover {
     text-decoration: underline;
 }
 
+/* Modo TV: esconder rodapé padrão e mostrar texto específico em letras pequenas */
+.footer-tv-mode {
+    display: none;
+}
+
+body.tv-mode .footer-default {
+    display: none;
+}
+
+body.tv-mode .footer-tv-mode {
+    display: inline;
+    font-size: 0.7rem;
+    color: rgba(0, 0, 0, 0.35);
+}
+
 /* ========================================
-   CONTROLE CICLO TV (PAUSAR / RETOMAR)
+   MODO TV – Botão de controle (Glassmorphism)
+   Verde = Rodando | Vermelho = Pausado
+   Oculto em mobile (< 1024px)
    ======================================== */
 .tv-controls {
     position: fixed;
@@ -415,38 +424,68 @@ footer a:hover {
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
-.btn-cycle {
+.btn-tv-mode {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    border: 1px solid var(--gold);
+    border: 1px solid rgba(76, 175, 80, 0.5);
     border-radius: 24px;
-    background: rgba(255, 255, 255, 0.5);
-    color: #333;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    color: #1b5e20;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.btn-cycle:hover {
-    background: var(--deep-pink);
-    color: white;
-    border-color: var(--deep-pink);
+.btn-tv-mode:hover {
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25);
+    border-color: rgba(76, 175, 80, 0.8);
+    transform: translateY(-1px);
 }
 
-.btn-cycle.paused {
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4caf50;
-    color: #2e7d32;
+/* Estado Pausado: tom vermelho suave */
+.btn-tv-mode.paused {
+    border-color: rgba(244, 67, 54, 0.5);
+    background: rgba(255, 255, 255, 0.25);
+    color: #c62828;
 }
 
-.btn-cycle.paused:hover {
-    background: #4caf50;
-    color: white;
-    border-color: #4caf50;
+.btn-tv-mode.paused:hover {
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(244, 67, 54, 0.2);
+    border-color: rgba(244, 67, 54, 0.7);
+}
+
+.btn-tv-mode-label {
+    opacity: 0.95;
+}
+
+/* ========================================
+   ESTADO .tv-mode ATIVO (exibição SENAI)
+   Botões de ação escondidos; card centralizado tipo Poster; transição suave
+   ======================================== */
+body.tv-mode .actions {
+    display: none !important;
+}
+
+body.tv-mode .main-container {
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    justify-self: center;
+    align-self: center;
+}
+
+body.tv-mode .phrase-text,
+body.tv-mode .author,
+body.tv-mode .icon-display {
+    transition: opacity 1s ease, transform 1s ease;
 }
 
 /* ========================================
