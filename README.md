@@ -1,61 +1,75 @@
 # 🌸 Essência Feminina - Dia das Mulheres
 
-Um site interativo e elegante dedicado ao Dia Internacional da Mulher (8 de março), celebrando a força, a resiliência e a magia feminina através de citações inspiradoras e um design visualmente encantador.
+Site interativo para o **Dia Internacional da Mulher (08/03)**, exibido em TV no SENAI. SPA que consome frases de `frases.json`, permite gerar imagens para Instagram e oferece experiência diferenciada em Desktop (Modo TV) e Mobile.
 
 ![Essência Feminina](https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&q=80&w=1200)
 
+**URL oficial:** [https://projeto-dia-das-mulheres-tan.vercel.app](https://projeto-dia-das-mulheres-tan.vercel.app)
+
+---
+
 ## ✨ Funcionalidades
 
-- **Citações Inspiradoras**: Mais de 15 frases poderosas de mulheres icônicas
-- **Design Responsivo**: Layout adaptável para desktop e mobile
-- **Animações Suaves**: Transições elegantes e efeitos visuais
-- **Partículas Interativas**: Fundo animado com partículas flutuantes
-- **Compartilhamento no Instagram**: Geração automática de imagens para postar nas redes sociais
-- **Tema Feminino**: Paleta de cores rosa e dourada com elementos florais
+- **Citações inspiradoras** — Dezenas de frases de mulheres icônicas, carregadas de `frases.json`
+- **Modo TV (Desktop)** — Ciclo automático a cada 90 segundos; botão Pausar/Retomar no topo
+- **QR Code dinâmico** — Em telas grandes, QR no canto inferior apontando para a URL da frase atual (`?id=INDEX`), atualizado a cada troca
+- **Deep linking** — Acesso direto por URL: `?id=0`, `?id=1`, etc. Ao escanear o QR na TV, o celular abre a mesma frase
+- **Experiência por dispositivo** — Desktop: ciclo ativo + QR + botão Modo TV; Mobile: só card + botões, navegação manual
+- **Compartilhamento no Instagram** — Geração e download de imagem da frase atual para postar
+- **Design** — Glassmorphism, partículas, animações e tema em rosa/dourado
 
-## 🚀 Tecnologias Utilizadas
+---
 
-- **HTML5**: Estrutura semântica e acessível
-- **CSS3**: Estilos modernos com variáveis CSS, animações e responsividade
-- **JavaScript (ES6+)**: Lógica interativa e manipulação do DOM
-- **Particles.js**: Biblioteca para efeitos de partículas
-- **html2canvas**: Geração de imagens a partir do canvas
-- **Google Fonts**: Tipografias elegantes (Cinzel, Montserrat, Playfair Display)
-- **Font Awesome**: Ícones vetoriais
+## 🚀 Tecnologias
 
-## 📁 Estrutura do Projeto
+- **HTML5** — Estrutura semântica
+- **CSS3** — Variáveis, animações, media queries (Desktop vs Mobile)
+- **JavaScript (ES6+)** — Carregamento de frases, ciclo automático, deep linking, QR dinâmico, html2canvas
+- **Particles.js** — Partículas no fundo
+- **html2canvas** — Geração da imagem para Instagram
+- **API QR** — [api.qrserver.com](https://api.qrserver.com) para QR Code
+- **Google Fonts** — Cinzel, Montserrat, Playfair Display
+- **Font Awesome** — Ícones
+
+---
+
+## 📁 Estrutura
 
 ```
 projeto-dia-das-mulheres/
-├── index.html          # Estrutura principal da página
-├── style.css           # Estilos CSS com animações
-├── index.js            # Lógica JavaScript
-├── frases.json         # Banco de dados das citações
-├── README.md           # Documentação do projeto
-└── LICENSE             # Licença do projeto
+├── index.html      # Página principal (card, botões, QR, controles TV)
+├── style.css       # Estilos, responsivo, Modo TV e QR só em desktop
+├── index.js        # Lógica: frases, ciclo 90s, deep link, QR, download Instagram
+├── frases.json     # Citações (t, a, icon)
+├── README.md
+└── LICENSE
 ```
 
-## 🎨 Como Usar
+---
 
-1. **Visualizar Frases**: Clique em "Nova Inspiração" para alternar entre citações
-2. **Compartilhar**: Use o botão "Postar no Instagram" para gerar uma imagem personalizada
-3. **Responsividade**: O site se adapta automaticamente a diferentes tamanhos de tela
+## 🎨 Como usar
+
+- **Desktop (TV/PC):** O ciclo de 90s inicia sozinho. Use "Pausar ciclo" / "Retomar ciclo" no topo. O QR Code mostra o link da frase atual; ao escanear no celular, abre a mesma frase.
+- **Mobile:** Sem ciclo automático. Use "Nova Inspiração" para trocar a frase e "Postar no Instagram" para gerar a imagem.
+- **Link com ID:** Abrir `https://projeto-dia-das-mulheres-tan.vercel.app/?id=5` exibe a frase de índice 5 e não inicia o ciclo (ideal para quem veio do QR).
+
+---
 
 ## 🌐 Deploy
 
-O projeto está configurado para deploy na Vercel com caminhos relativos, garantindo compatibilidade total.
+Projeto hospedado na **Vercel**. A URL oficial é usada no QR Code para que o celular sempre abra o site em produção com o parâmetro `?id=INDEX`.
+
+---
 
 ## 👩‍💻 Autores
 
-Desenvolvido com ❤️ por:
+- [**Shiroi_Crypto**](https://github.com/ShiroiCrypto)
+- [**Retr0**](https://github.com/Retr0DedSec0)
 
-- [**Shiroi_Crypto**](https://github.com/ShiroiCrypto) - Desenvolvedor Backend
-- [**Retr0**](https://github.com/Retr0DedSec0) - Desenvolvedor Full-Stack
+---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
+Este projeto está sob a licença MIT. Ver [LICENSE](LICENSE).
 
 *Celebrando a essência feminina em cada linha de código! 💖*
